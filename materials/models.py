@@ -5,6 +5,7 @@ from django.core.validators import URLValidator
 class Course(models.Model):
     title = models.CharField(
         max_length=150,
+        unique=True,
         verbose_name="Курс"
     )
     picture = models.ImageField(
@@ -30,6 +31,7 @@ class Course(models.Model):
 class Lesson(models.Model):
     title = models.CharField(
         max_length=150,
+        unique=True,
         verbose_name="Урок"
     )
     description = models.TextField(
