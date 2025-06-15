@@ -22,3 +22,17 @@ isort = "^6.0.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+exclude = '''
+(
+  /(
+      \.git
+  )/
+)
+'''
+
+[tool.isort]
+line_length = 79
+multi_line_output = 5
