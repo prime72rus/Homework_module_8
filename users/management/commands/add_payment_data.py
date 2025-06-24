@@ -8,6 +8,13 @@ class Command(BaseCommand):
     help = "Создает тестовую запись о платеже пользователя"
 
     def handle(self, *args, **options):
+        if User.objects.filter(email="first_user@example.com").exists():
+            self.stdout.write(
+                self.style.ERROR(
+                    "Пользователь с таким email уже существует!"
+                )
+            )
+            return
         user = User.objects.create(
             email="first_user@example.com",
             phone="89999999999",
