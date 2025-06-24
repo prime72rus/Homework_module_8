@@ -20,7 +20,7 @@ urlpatterns = [
         name="lesson_detail",
     ),
     path(
-        "lessons/create", LessonCreateAPIView.as_view(), name="lesson_create"
+        "lessons/create/", LessonCreateAPIView.as_view(), name="lesson_create"
     ),
     path(
         "lessons/update/<int:pk>/",

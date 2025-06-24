@@ -23,7 +23,7 @@ class Course(models.Model):
 
 
 class Lesson(models.Model):
-    title = models.CharField(max_length=150, unique=True, verbose_name="Урок")
+    title = models.CharField(max_length=150, verbose_name="Урок")
     description = models.TextField(
         blank=True, null=True, verbose_name="Описание"
     )
