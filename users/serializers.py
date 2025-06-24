@@ -11,6 +11,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     payments = PaymentSerializer(many=True, read_only=True, source="users.all")
+
     class Meta:
         model = User
         fields = (
@@ -23,5 +24,3 @@ class UserSerializer(serializers.ModelSerializer):
             "is_active",
             "payments",
         )
-
-

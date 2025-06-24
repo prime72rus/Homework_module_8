@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-from getpass import getpass
-from materials.models import Course, Lesson
+from materials.models import Course
 from users.models import User, Payment
 
 
@@ -10,9 +9,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if User.objects.filter(email="first_user@example.com").exists():
             self.stdout.write(
-                self.style.ERROR(
-                    "Пользователь с таким email уже существует!"
-                )
+                self.style.ERROR("Пользователь с таким email уже существует!")
             )
             return
         user = User.objects.create(
@@ -25,7 +22,9 @@ class Command(BaseCommand):
         user.save()
         course = Course.objects.create(
             title="Профессия Python-разработчик",
-            description="Python-разработчик — это программист, который создаёт и поддерживает программное обеспечение с использованием языка программирования Python."
+            description="Python-разработчик — это программист, который "
+                        "создаёт и поддерживает программное обеспечение с "
+                        "использованием языка программирования Python.",
         )
 
         Payment.objects.create(

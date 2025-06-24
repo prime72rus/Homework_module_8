@@ -11,7 +11,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField(read_only=True)
-    lessons = LessonSerializer(many=True, read_only=True, source='lessons.all')
+    lessons = LessonSerializer(many=True, read_only=True, source="lessons.all")
 
     def get_lessons_count(self, obj):
         if hasattr(obj, "lessons_count"):
@@ -20,4 +20,11 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ("id", "title", "picture", "description", "lessons_count", "lessons")
+        fields = (
+            "id",
+            "title",
+            "picture",
+            "description",
+            "lessons_count",
+            "lessons",
+        )
