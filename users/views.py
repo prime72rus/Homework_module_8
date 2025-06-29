@@ -1,22 +1,16 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
+    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 )
 from rest_framework.permissions import AllowAny
-from rest_framework.exceptions import PermissionDenied
 
 from users.models import Payment, User
 from users.serializers import (
-    PaymentSerializer,
-    UserListSerializer,
-    UserSerializer,
-    UserPublicListSerializer,
+    PaymentSerializer, UserListSerializer, UserPublicListSerializer,
+    UserSerializer
 )
 
 
@@ -53,7 +47,8 @@ class UserUpdateAPIView(UpdateAPIView):
         user = super().get_object()
         if user != self.request.user:
             raise PermissionDenied(
-                "Вы можете редактировать только свой профиль")
+                "Вы можете редактировать только свой профиль"
+            )
         return user
 
     def perform_update(self, serializer):

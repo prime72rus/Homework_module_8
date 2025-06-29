@@ -1,13 +1,9 @@
 from django.db.models import Count
 from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
+    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 )
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 
 from materials.models import Course, Lesson
 from materials.serializers import CourseSerializer, LessonSerializer
@@ -26,9 +22,13 @@ class CourseViewSet(ModelViewSet):
         if self.action == "create":
             self.permission_classes = [IsAuthenticated & ~IsModerator]
         elif self.action in ["update", "partial_update", "retrieve"]:
-            self.permission_classes = [IsAuthenticated & (IsOwner | IsModerator)]
+            self.permission_classes = [
+                IsAuthenticated & (IsOwner | IsModerator)
+            ]
         elif self.action == "destroy":
-            self.permission_classes = [IsAuthenticated & (IsOwner | ~IsModerator)]
+            self.permission_classes = [
+                IsAuthenticated & (IsOwner | ~IsModerator)
+            ]
         return super().get_permissions()
 
     def perform_create(self, serializer):
