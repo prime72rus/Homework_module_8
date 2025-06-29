@@ -1,6 +1,10 @@
 from django.db.models import Count
 from rest_framework.generics import (
-    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
 )
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
@@ -25,6 +29,11 @@ class CourseViewSet(ModelViewSet):
             self.permission_classes = (IsModerators,)
         return super().get_permissions()
 
+    def perform_create(self, serializer):
+        course = serializer.save()
+        course.owner = self.request.user
+        course.save()
+
 
 class LessonListAPIView(ListAPIView):
     serializer_class = LessonSerializer
@@ -40,6 +49,11 @@ class LessonRetrieveAPIView(RetrieveAPIView):
 class LessonCreateAPIView(CreateAPIView):
     permission_classes = (IsAuthenticated, ~IsModerators)
     serializer_class = LessonSerializer
+
+    def perform_create(self, serializer):
+        lesson = serializer.save()
+        lesson.owner = self.request.user
+        lesson.save()
 
 
 class LessonUpdateAPIView(UpdateAPIView):
