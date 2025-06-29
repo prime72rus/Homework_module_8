@@ -31,3 +31,17 @@ class UserListSerializer(serializers.ModelSerializer):
             "is_active",
             "payments",
         )
+
+
+class UserPublicListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "phone",
+            "city",
+            "avatar",
+        )
