@@ -1,16 +1,15 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, \
-    ListAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import (
+    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+)
+from rest_framework.permissions import AllowAny
 
-from users.models import User, Payment
-from users.serializers import UserListSerializer, PaymentSerializer, UserSerializer
-
-
-# class UserViewSet(viewsets.ModelViewSet):
-#     serializer_class = UserSerializer
-#     queryset = User.objects.all()
+from users.models import Payment, User
+from users.serializers import (
+    PaymentSerializer, UserListSerializer, UserSerializer
+)
 
 
 class UserListAPIView(ListAPIView):
@@ -24,6 +23,7 @@ class UserDetailAPIView(RetrieveAPIView):
 
 
 class UserCreateAPIView(CreateAPIView):
+    permission_classes = (AllowAny,)
     serializer_class = UserSerializer
     queryset = User.objects.all()
 

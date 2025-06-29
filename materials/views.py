@@ -1,15 +1,11 @@
+from django.db.models import Count
 from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
+    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 )
 from rest_framework.viewsets import ModelViewSet
 
 from materials.models import Course, Lesson
 from materials.serializers import CourseSerializer, LessonSerializer
-from django.db.models import Count
 
 
 class CourseViewSet(ModelViewSet):
