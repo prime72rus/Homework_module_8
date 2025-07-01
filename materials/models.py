@@ -45,7 +45,6 @@ class Lesson(models.Model):
         max_length=500,
         blank=True,
         null=True,
-        validators=[URLValidator(schemes=["https"])],
         verbose_name="Ссылка на видео",
     )
     course = models.ForeignKey(

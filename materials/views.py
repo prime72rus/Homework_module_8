@@ -1,6 +1,10 @@
 from django.db.models import Count
 from rest_framework.generics import (
-    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
