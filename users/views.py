@@ -3,14 +3,20 @@ from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
-    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
 )
 from rest_framework.permissions import AllowAny
 
 from users.models import Payment, User
 from users.serializers import (
-    PaymentSerializer, UserListSerializer, UserPublicListSerializer,
-    UserSerializer
+    PaymentSerializer,
+    UserListSerializer,
+    UserPublicListSerializer,
+    UserSerializer,
 )
 
 

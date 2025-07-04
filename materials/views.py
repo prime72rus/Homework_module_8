@@ -24,6 +24,7 @@ from materials.paginators import MaterialPaginator
 
 
 class SubscriptionAPIView(APIView):
+    serializer_class = SubscriptionSerializer
 
     def post(self, request, *args, **kwargs):
         user = request.user
