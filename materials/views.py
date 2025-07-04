@@ -14,8 +14,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from materials.models import Course, Lesson, Subscription
-from materials.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer
-from users.permissions import IsModerator, IsOwner
+from materials.serializers import (
+    CourseSerializer,
+    LessonSerializer,
+    SubscriptionSerializer,
+)
+from users.permissions import IsModerator, IsNotModerator, IsOwner
 from materials.paginators import MaterialPaginator
 
 
@@ -28,13 +32,12 @@ class SubscriptionAPIView(APIView):
         if not course_id:
             return Response(
                 {"error": "course_id обязательное поле"},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         course = get_object_or_404(Course, id=course_id)
         subscription, created = Subscription.objects.get_or_create(
-            user=user,
-            course=course
+            user=user, course=course
         )
 
         if not created:
@@ -57,20 +60,20 @@ class CourseViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action == "create":
-            self.permission_classes = [IsAuthenticated & ~IsModerator]
+            self.permission_classes = [IsAuthenticated & IsNotModerator]
         elif self.action in ["update", "partial_update", "retrieve"]:
             self.permission_classes = [
                 IsAuthenticated & (IsOwner | IsModerator)
             ]
         elif self.action == "destroy":
             self.permission_classes = [
-                IsAuthenticated & (IsOwner | ~IsModerator)
+                IsAuthenticated & (IsOwner | IsNotModerator)
             ]
         return super().get_permissions()
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['request'] = self.request
+        context["request"] = self.request
         return context
 
     def perform_create(self, serializer):
@@ -92,7 +95,7 @@ class LessonRetrieveAPIView(RetrieveAPIView):
 
 
 class LessonCreateAPIView(CreateAPIView):
-    permission_classes = [IsAuthenticated & ~IsModerator]
+    permission_classes = [IsAuthenticated & IsNotModerator]
     serializer_class = LessonSerializer
 
     def perform_create(self, serializer):
@@ -108,6 +111,6 @@ class LessonUpdateAPIView(UpdateAPIView):
 
 
 class LessonDestroyAPIView(DestroyAPIView):
-    permission_classes = [IsAuthenticated & IsOwner & ~IsModerator]
+    permission_classes = [IsAuthenticated, IsOwner, IsNotModerator]
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
