@@ -28,11 +28,11 @@ class SubscriptionAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        course_id = request.data.get("course_id")
+        course_id = request.data.get("course")
 
         if not course_id:
             return Response(
-                {"error": "course_id обязательное поле"},
+                {"error": "course обязательное поле"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
