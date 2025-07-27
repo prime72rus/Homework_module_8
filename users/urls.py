@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import (
 from users.apps import UsersConfig
 from users.views import (
     PaymentViewSet,
+    PaymentUpdateAPIView,
     UserCreateAPIView,
     UserDeleteAPIView,
     UserDetailAPIView,
@@ -43,5 +44,10 @@ urlpatterns = [
         "users/token/refresh/",
         TokenRefreshView.as_view(permission_classes=(AllowAny,)),
         name="token_refresh",
+    ),
+    path(
+        "payment/status/<int:pk>/",
+        PaymentUpdateAPIView.as_view(),
+        name="payment_status",
     ),
 ] + router.urls

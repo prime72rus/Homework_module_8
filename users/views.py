@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
@@ -18,7 +19,7 @@ from users.serializers import (
     UserPublicListSerializer,
     UserSerializer,
 )
-from users.services import create_stripe_product, create_stripe_price, create_stripe_session
+from users.services import create_stripe_product, create_stripe_price, create_stripe_session, get_stripe_payment_status
 
 
 class UserListAPIView(ListAPIView):
@@ -99,21 +100,31 @@ class PaymentViewSet(viewsets.ModelViewSet):
             raise serializers.ValidationError(
                 "Не указан курс или урок для оплаты")
 
-        # Получаем сумму из модели курса/урока
         amount = paid_item.amount
 
-        # Создаем продукт и цену в Stripe
         product_name = f"{item_type}: {paid_item.title}"
         stripe_price = create_stripe_price(amount, product_name)
 
-        # Создаем сессию оплаты
-        session_id, payment_url = create_stripe_session(stripe_price.id)
+        session_id, payment_url, payment_status = create_stripe_session(stripe_price.id)
 
-        # Сохраняем платеж
         serializer.save(
             amount=amount,
             session_id=session_id,
             payment_link=payment_url,
+            payment_status=payment_status,
             user=user,
             payment_method="transfer"
         )
+
+class PaymentUpdateAPIView(UpdateAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        session_id = instance.session_id
+        payment_status = get_stripe_payment_status(session_id)
+        instance.payment_status = payment_status
+        instance.save()
+
+        return super().partial_update(request, *args, **kwargs)
