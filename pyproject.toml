@@ -19,6 +19,7 @@ djangorestframework-simplejwt = "^5.5.0"
 coverage = "^7.9.2"
 drf-yasg = "^1.21.10"
 drf-spectacular = {extras = ["sidecar"], version = "^0.28.0"}
+stripe = "^12.3.0"
 
 
 [tool.poetry.group.lint.dependencies]

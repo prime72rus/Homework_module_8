@@ -45,5 +45,6 @@ class CourseSerializer(serializers.ModelSerializer):
             "lessons_count",
             "lessons",
             "owner",
+            "amount",
             "is_subscribed",
         )

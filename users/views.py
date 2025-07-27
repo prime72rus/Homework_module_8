@@ -18,6 +18,7 @@ from users.serializers import (
     UserPublicListSerializer,
     UserSerializer,
 )
+from users.services import create_stripe_product, create_stripe_price, create_stripe_session
 
 
 class UserListAPIView(ListAPIView):
@@ -82,3 +83,37 @@ class PaymentViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ("paid_course", "paid_lesson", "payment_method")
     ordering_fields = ("payment_date",)
+
+    def perform_create(self, serializer):
+        payment_data = serializer.validated_data
+        user = self.request.user
+
+        # Определяем, что оплачивается (курс или урок)
+        if payment_data.get("paid_course"):
+            paid_item = payment_data["paid_course"]
+            item_type = "Курс"
+        elif payment_data.get("paid_lesson"):
+            paid_item = payment_data["paid_lesson"]
+            item_type = "Урок"
+        else:
+            raise serializers.ValidationError(
+                "Не указан курс или урок для оплаты")
+
+        # Получаем сумму из модели курса/урока
+        amount = paid_item.amount
+
+        # Создаем продукт и цену в Stripe
+        product_name = f"{item_type}: {paid_item.title}"
+        stripe_price = create_stripe_price(amount, product_name)
+
+        # Создаем сессию оплаты
+        session_id, payment_url = create_stripe_session(stripe_price.id)
+
+        # Сохраняем платеж
+        serializer.save(
+            amount=amount,
+            session_id=session_id,
+            payment_link=payment_url,
+            user=user,
+            payment_method="transfer"
+        )
