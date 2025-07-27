@@ -68,10 +68,7 @@ class Payment(models.Model):
         verbose_name="Оплаченный урок",
     )
     amount = models.PositiveIntegerField(
-        default=0,
-        blank=True,
-        null=True,
-        verbose_name="Сумма оплаты"
+        default=0, blank=True, null=True, verbose_name="Сумма оплаты"
     )
     payment_method = models.CharField(
         max_length=20,

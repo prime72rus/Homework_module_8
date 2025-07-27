@@ -1,7 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
+from rest_framework import viewsets
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
     CreateAPIView,
@@ -19,7 +18,12 @@ from users.serializers import (
     UserPublicListSerializer,
     UserSerializer,
 )
-from users.services import create_stripe_product, create_stripe_price, create_stripe_session, get_stripe_payment_status
+from users.services import (
+    create_stripe_price,
+    create_stripe_product,
+    create_stripe_session,
+    get_stripe_payment_status,
+)
 
 
 class UserListAPIView(ListAPIView):
@@ -89,7 +93,6 @@ class PaymentViewSet(viewsets.ModelViewSet):
         payment_data = serializer.validated_data
         user = self.request.user
 
-        # Определяем, что оплачивается (курс или урок)
         if payment_data.get("paid_course"):
             paid_item = payment_data["paid_course"]
             item_type = "Курс"
@@ -97,15 +100,17 @@ class PaymentViewSet(viewsets.ModelViewSet):
             paid_item = payment_data["paid_lesson"]
             item_type = "Урок"
         else:
-            raise serializers.ValidationError(
-                "Не указан курс или урок для оплаты")
+            raise ValidationError("Не указан курс или урок для оплаты")
 
         amount = paid_item.amount
 
         product_name = f"{item_type}: {paid_item.title}"
-        stripe_price = create_stripe_price(amount, product_name)
+        product = create_stripe_product(product_name)
+        stripe_price = create_stripe_price(amount, product)
 
-        session_id, payment_url, payment_status = create_stripe_session(stripe_price.id)
+        session_id, payment_url, payment_status = create_stripe_session(
+            stripe_price.id
+        )
 
         serializer.save(
             amount=amount,
@@ -113,8 +118,9 @@ class PaymentViewSet(viewsets.ModelViewSet):
             payment_link=payment_url,
             payment_status=payment_status,
             user=user,
-            payment_method="transfer"
+            payment_method="transfer",
         )
+
 
 class PaymentUpdateAPIView(UpdateAPIView):
     serializer_class = PaymentSerializer

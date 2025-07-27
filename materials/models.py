@@ -21,8 +21,7 @@ class Course(models.Model):
         verbose_name="Владелец",
     )
     amount = models.PositiveIntegerField(
-        verbose_name="Стоимость курса",
-        default=0
+        verbose_name="Стоимость курса", default=0
     )
 
     class Meta:
@@ -67,8 +66,7 @@ class Lesson(models.Model):
         verbose_name="Владелец",
     )
     amount = models.PositiveIntegerField(
-        verbose_name="Стоимость урока",
-        default=0
+        verbose_name="Стоимость урока", default=0
     )
 
     class Meta:

@@ -8,8 +8,8 @@ from rest_framework_simplejwt.views import (
 
 from users.apps import UsersConfig
 from users.views import (
-    PaymentViewSet,
     PaymentUpdateAPIView,
+    PaymentViewSet,
     UserCreateAPIView,
     UserDeleteAPIView,
     UserDetailAPIView,

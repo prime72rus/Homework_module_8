@@ -1,26 +1,20 @@
 from django.db.models import Count
-from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
+    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 )
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from materials.models import Course, Lesson, Subscription
+from materials.paginators import MaterialPaginator
 from materials.serializers import (
-    CourseSerializer,
-    LessonSerializer,
-    SubscriptionSerializer,
+    CourseSerializer, LessonSerializer, SubscriptionSerializer
 )
 from users.permissions import IsModerator, IsNotModerator, IsOwner, IsSuperUser
-from materials.paginators import MaterialPaginator
 
 
 class SubscriptionAPIView(APIView):
@@ -61,14 +55,19 @@ class CourseViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action == "create":
-            self.permission_classes = [IsAuthenticated, (IsNotModerator | IsSuperUser)]
+            self.permission_classes = [
+                IsAuthenticated,
+                (IsNotModerator | IsSuperUser),
+            ]
         elif self.action in ["update", "partial_update", "retrieve"]:
             self.permission_classes = [
-                IsAuthenticated, (IsOwner | IsModerator | IsSuperUser)
+                IsAuthenticated,
+                (IsOwner | IsModerator | IsSuperUser),
             ]
         elif self.action == "destroy":
             self.permission_classes = [
-                IsAuthenticated, (IsOwner | IsNotModerator | IsSuperUser)
+                IsAuthenticated,
+                (IsOwner | IsNotModerator | IsSuperUser),
             ]
         return super().get_permissions()
 
@@ -90,7 +89,10 @@ class LessonListAPIView(ListAPIView):
 
 
 class LessonRetrieveAPIView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated, (IsModerator | IsOwner | IsSuperUser)]
+    permission_classes = [
+        IsAuthenticated,
+        (IsModerator | IsOwner | IsSuperUser),
+    ]
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
 
@@ -106,12 +108,19 @@ class LessonCreateAPIView(CreateAPIView):
 
 
 class LessonUpdateAPIView(UpdateAPIView):
-    permission_classes = [IsAuthenticated, (IsModerator | IsOwner | IsSuperUser)]
+    permission_classes = [
+        IsAuthenticated,
+        (IsModerator | IsOwner | IsSuperUser),
+    ]
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
 
 
 class LessonDestroyAPIView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsNotModerator, (IsOwner | IsSuperUser)]
+    permission_classes = [
+        IsAuthenticated,
+        IsNotModerator,
+        (IsOwner | IsSuperUser),
+    ]
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
