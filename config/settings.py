@@ -188,7 +188,7 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     'deactivate-inactive-users': {
         'task': 'users.tasks.deactivate_inactive_users',
-        'schedule': timedelta(minutes=1),
+        'schedule': timedelta(days=1),
     },
 }
 
