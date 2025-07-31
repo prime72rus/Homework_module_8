@@ -3,26 +3,18 @@ from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
+    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 )
 from rest_framework.permissions import AllowAny
 
 from users.models import Payment, User
 from users.serializers import (
-    PaymentSerializer,
-    UserListSerializer,
-    UserPublicListSerializer,
-    UserSerializer,
+    PaymentSerializer, UserListSerializer, UserPublicListSerializer,
+    UserSerializer
 )
 from users.services import (
-    create_stripe_price,
-    create_stripe_product,
-    create_stripe_session,
-    get_stripe_payment_status,
+    create_stripe_price, create_stripe_product, create_stripe_session,
+    get_stripe_payment_status
 )
 
 
