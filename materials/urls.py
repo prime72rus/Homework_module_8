@@ -3,9 +3,13 @@ from rest_framework.routers import DefaultRouter
 
 from materials.apps import MaterialsConfig
 from materials.views import (
-    CourseViewSet, LessonCreateAPIView, LessonDestroyAPIView,
-    LessonListAPIView, LessonRetrieveAPIView, LessonUpdateAPIView,
-    SubscriptionAPIView
+    CourseViewSet,
+    LessonCreateAPIView,
+    LessonDestroyAPIView,
+    LessonListAPIView,
+    LessonRetrieveAPIView,
+    LessonUpdateAPIView,
+    SubscriptionAPIView,
 )
 
 app_name = MaterialsConfig.name

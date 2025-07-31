@@ -1,8 +1,16 @@
+from datetime import timedelta
+
+from django.db import transaction
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.generics import (
-    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -12,7 +20,13 @@ from rest_framework.viewsets import ModelViewSet
 from materials.models import Course, Lesson, Subscription
 from materials.paginators import MaterialPaginator
 from materials.serializers import (
-    CourseSerializer, LessonSerializer, SubscriptionSerializer
+    CourseSerializer,
+    LessonSerializer,
+    SubscriptionSerializer,
+)
+from materials.tasks import (
+    schedule_course_notification,
+    send_email_about_update_course,
 )
 from users.permissions import IsModerator, IsNotModerator, IsOwner, IsSuperUser
 
@@ -71,6 +85,19 @@ class CourseViewSet(ModelViewSet):
             ]
         return super().get_permissions()
 
+    def perform_update(self, serializer):
+        with transaction.atomic():
+            old_course = self.get_object()
+            last_updated = old_course.updated_at
+            now = timezone.now()
+
+            course = serializer.save()
+
+            if (now - last_updated) > timedelta(minutes=2):
+                send_email_about_update_course.delay(course.id)
+            else:
+                schedule_course_notification.delay(course.id)
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["request"] = self.request
@@ -114,6 +141,23 @@ class LessonUpdateAPIView(UpdateAPIView):
     ]
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+
+    def perform_update(self, serializer):
+        with transaction.atomic():
+            lesson = serializer.save()
+
+            course = Course.objects.select_for_update().get(
+                pk=lesson.course.pk
+            )
+            last_updated = course.updated_at
+            now = timezone.now()
+
+            lesson.course.save()
+
+            if (now - last_updated) > timedelta(minutes=2):
+                send_email_about_update_course.delay(lesson.course.id)
+            else:
+                schedule_course_notification.delay(lesson.course.id)
 
 
 class LessonDestroyAPIView(DestroyAPIView):

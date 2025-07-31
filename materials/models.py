@@ -23,6 +23,16 @@ class Course(models.Model):
     amount = models.PositiveIntegerField(
         verbose_name="Стоимость курса", default=0
     )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Дата последнего обновления",
+    )
+    notification_task_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="ID задачи уведомления",
+    )
 
     class Meta:
         verbose_name = "Курс"
@@ -91,7 +101,7 @@ class Subscription(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name="courses",
+        related_name="subscriptions",
         verbose_name="Курс",
     )
 
