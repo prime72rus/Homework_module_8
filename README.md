@@ -36,7 +36,7 @@ poetry init
 poetry install
 ```
 По шаблону `.env.sample` создайте и заполните в корневой папке проекта файл `.env`.  
-Установите Docker и Docker Compose, если они ещё не установлены.
+Установите Docker Desktop (Docker и Docker Compose), если они ещё не установлены.
 В терминале, перейдите в директорию проекта.
 Запустите команду:
 ```python
