@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
+from rest_framework import serializers
 
 from materials.models import Course, Lesson, Subscription
 from materials.validators import URLYouTubeValidator

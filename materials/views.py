@@ -6,11 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
+    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -20,13 +16,10 @@ from rest_framework.viewsets import ModelViewSet
 from materials.models import Course, Lesson, Subscription
 from materials.paginators import MaterialPaginator
 from materials.serializers import (
-    CourseSerializer,
-    LessonSerializer,
-    SubscriptionSerializer,
+    CourseSerializer, LessonSerializer, SubscriptionSerializer
 )
 from materials.tasks import (
-    schedule_course_notification,
-    send_email_about_update_course,
+    schedule_course_notification, send_email_about_update_course
 )
 from users.permissions import IsModerator, IsNotModerator, IsOwner, IsSuperUser
 

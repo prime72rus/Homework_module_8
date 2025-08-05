@@ -35,7 +35,7 @@ def schedule_course_notification(self, course_id):
         AsyncResult(course.notification_task_id).revoke()
 
     task = send_email_about_update_course.apply_async(
-        args=[course.id], countdown=4 * 60 * 60 # 4 часа в секундах
+        args=[course.id], countdown=4 * 60 * 60
     )
 
     course.notification_task_id = task.id
