@@ -35,6 +35,7 @@ poetry init
 ```python
 poetry install
 ```
+По шаблону `.env.sample` создайте и заполните в корневой папке проекта файл `.env`.  
 Установите Docker и Docker Compose, если они ещё не установлены.
 В терминале, перейдите в директорию проекта.
 Запустите команду:
@@ -42,7 +43,7 @@ poetry install
 docker-compose up --build
 ```
 ### Документация по использованию API приложения
-При запущенном приложении:
+При запущенном приложении:  
 http://localhost:8000/swagger/  
 http://localhost:8000/redoc/
 
