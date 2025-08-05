@@ -16,7 +16,7 @@ class UserAdmin(BaseUserAdmin):  # Наследуем от BaseUserAdmin
         (None, {"fields": ("email", "password")}),
         (
             _("Personal info"),
-            {"fields": ("first_name", "last_name", "phone", "city", "avatar")},
+            {"fields": ("first_name", "last_name", "phone", "city")},
         ),
         (
             _("Permissions"),
