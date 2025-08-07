@@ -129,27 +129,27 @@ jobs:
       - name: Create .env file
         run: |
           cat <<EOT > .env
-          SECRET_KEY = ${{ secrets.SECRET_KEY }}
-          ENGINE = ${{ secrets.ENGINE }}
-          NAME = ${{ secrets.NAME }}
-          USER = ${{ secrets.USER }}
-          PASSWORD = ${{ secrets.PASSWORD }}
-          HOST = ${{ secrets.HOST }}
-          PORT = ${{ secrets.PORT }}
-          EMAIL_BACKEND = ${{ secrets.EMAIL_BACKEND }}
-          EMAIL_HOST = ${{ secrets.EMAIL_HOST }}
-          EMAIL_PORT = ${{ secrets.EMAIL_PORT }}
-          EMAIL_USE_SSL = ${{ secrets.EMAIL_USE_SSL }}
-          EMAIL_USE_TLS = ${{ secrets.EMAIL_USE_TLS }}
-          EMAIL_HOST_USER = ${{ secrets.EMAIL_HOST_USER }}
-          EMAIL_HOST_PASSWORD = ${{ secrets.EMAIL_HOST_PASSWORD }}
-          DEFAULT_FROM_EMAIL = ${{ secrets.DEFAULT_FROM_EMAIL }}
-          MANAGER_EMAIL = ${{ secrets.MANAGER_EMAIL }}
-          BACKEND = ${{ secrets.BACKEND }}
-          LOCATION = ${{ secrets.LOCATION }}
-          STRIPE_API_KEY = ${{ secrets.STRIPE_API_KEY }}
-          CELERY_BROKER_URL = ${{ secrets.CELERY_BROKER_URL }}
-          CELERY_RESULT_BACKEND = ${{ secrets.CELERY_RESULT_BACKEND }}
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          ENGINE=${{ secrets.ENGINE }}
+          NAME=${{ secrets.NAME }}
+          USER=${{ secrets.USER }}
+          PASSWORD=${{ secrets.PASSWORD }}
+          HOST=${{ secrets.HOST }}
+          PORT=${{ secrets.PORT }}
+          EMAIL_BACKEND=${{ secrets.EMAIL_BACKEND }}
+          EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+          EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+          EMAIL_USE_SSL=${{ secrets.EMAIL_USE_SSL }}
+          EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}
+          EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
+          EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
+          DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}
+          MANAGER_EMAIL=${{ secrets.MANAGER_EMAIL }}
+          BACKEND=${{ secrets.BACKEND }}
+          LOCATION=${{ secrets.LOCATION }}
+          STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+          CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }}
+          CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}
           EOT
 
       - name: Deploy to server
