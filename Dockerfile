@@ -23,7 +23,7 @@ RUN poetry install --no-interaction --no-ansi --only main
 
 COPY . .
 
-RUN mkdir -p /app/{static,media}
+RUN mkdir -p /app/staticfiles
 
 EXPOSE 8000
 
