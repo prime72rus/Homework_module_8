@@ -20,10 +20,11 @@ ENV PATH="/root/.local/bin:${PATH}"
 COPY pyproject.toml ./
 
 RUN poetry install --no-interaction --no-ansi --only main
+RUN poetry add gunicorn
 
 COPY . .
 
-RUN mkdir -p /app/staticfiles
+RUN mkdir -p /app/staticfiles && chmod -R 755 /app/staticfiles
 
 EXPOSE 8000
 
