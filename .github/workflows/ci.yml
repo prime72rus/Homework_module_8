@@ -55,10 +55,10 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --no-root
-          poetry shell
 
       - name: Run tests
         run: |
+          source $(poetry env info --path)/bin/activate
           python manage.py test
 
   build:
