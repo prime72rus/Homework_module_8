@@ -17,7 +17,7 @@ RUN poetry config virtualenvs.create false
 
 ENV PATH="/root/.local/bin:${PATH}"
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml ./
 
 RUN poetry install --no-interaction --no-ansi --only main
 
