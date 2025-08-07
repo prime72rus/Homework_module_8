@@ -1,26 +1,27 @@
+from datetime import timedelta
+
+from django.db import transaction
 from django.db.models import Count
-from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
+    CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 )
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from materials.models import Course, Lesson, Subscription
-from materials.serializers import (
-    CourseSerializer,
-    LessonSerializer,
-    SubscriptionSerializer,
-)
-from users.permissions import IsModerator, IsNotModerator, IsOwner
 from materials.paginators import MaterialPaginator
+from materials.serializers import (
+    CourseSerializer, LessonSerializer, SubscriptionSerializer
+)
+from materials.tasks import (
+    schedule_course_notification, send_email_about_update_course
+)
+from users.permissions import IsModerator, IsNotModerator, IsOwner, IsSuperUser
 
 
 class SubscriptionAPIView(APIView):
@@ -28,11 +29,11 @@ class SubscriptionAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        course_id = request.data.get("course_id")
+        course_id = request.data.get("course")
 
         if not course_id:
             return Response(
-                {"error": "course_id обязательное поле"},
+                {"error": "course обязательное поле"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -61,16 +62,34 @@ class CourseViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action == "create":
-            self.permission_classes = [IsAuthenticated & IsNotModerator]
+            self.permission_classes = [
+                IsAuthenticated,
+                (IsNotModerator | IsSuperUser),
+            ]
         elif self.action in ["update", "partial_update", "retrieve"]:
             self.permission_classes = [
-                IsAuthenticated & (IsOwner | IsModerator)
+                IsAuthenticated,
+                (IsOwner | IsModerator | IsSuperUser),
             ]
         elif self.action == "destroy":
             self.permission_classes = [
-                IsAuthenticated & (IsOwner | IsNotModerator)
+                IsAuthenticated,
+                (IsOwner | IsNotModerator | IsSuperUser),
             ]
         return super().get_permissions()
+
+    def perform_update(self, serializer):
+        with transaction.atomic():
+            old_course = self.get_object()
+            last_updated = old_course.updated_at
+            now = timezone.now()
+
+            course = serializer.save()
+
+            if (now - last_updated) > timedelta(minutes=2):
+                send_email_about_update_course.delay(course.id)
+            else:
+                schedule_course_notification.delay(course.id)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -90,13 +109,16 @@ class LessonListAPIView(ListAPIView):
 
 
 class LessonRetrieveAPIView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated & (IsModerator | IsOwner)]
+    permission_classes = [
+        IsAuthenticated,
+        (IsModerator | IsOwner | IsSuperUser),
+    ]
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
 
 
 class LessonCreateAPIView(CreateAPIView):
-    permission_classes = [IsAuthenticated & IsNotModerator]
+    permission_classes = [IsAuthenticated, IsNotModerator]
     serializer_class = LessonSerializer
 
     def perform_create(self, serializer):
@@ -106,12 +128,36 @@ class LessonCreateAPIView(CreateAPIView):
 
 
 class LessonUpdateAPIView(UpdateAPIView):
-    permission_classes = [IsAuthenticated & (IsModerator | IsOwner)]
+    permission_classes = [
+        IsAuthenticated,
+        (IsModerator | IsOwner | IsSuperUser),
+    ]
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
 
+    def perform_update(self, serializer):
+        with transaction.atomic():
+            lesson = serializer.save()
+
+            course = Course.objects.select_for_update().get(
+                pk=lesson.course.pk
+            )
+            last_updated = course.updated_at
+            now = timezone.now()
+
+            lesson.course.save()
+
+            if (now - last_updated) > timedelta(minutes=2):
+                send_email_about_update_course.delay(lesson.course.id)
+            else:
+                schedule_course_notification.delay(lesson.course.id)
+
 
 class LessonDestroyAPIView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsOwner, IsNotModerator]
+    permission_classes = [
+        IsAuthenticated,
+        IsNotModerator,
+        (IsOwner | IsSuperUser),
+    ]
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()

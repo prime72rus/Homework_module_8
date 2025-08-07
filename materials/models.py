@@ -20,6 +20,19 @@ class Course(models.Model):
         related_name="courses",
         verbose_name="Владелец",
     )
+    amount = models.PositiveIntegerField(
+        verbose_name="Стоимость курса", default=0
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Дата последнего обновления",
+    )
+    notification_task_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="ID задачи уведомления",
+    )
 
     class Meta:
         verbose_name = "Курс"
@@ -62,6 +75,9 @@ class Lesson(models.Model):
         related_name="lessons",
         verbose_name="Владелец",
     )
+    amount = models.PositiveIntegerField(
+        verbose_name="Стоимость урока", default=0
+    )
 
     class Meta:
         verbose_name = "Урок"
@@ -85,7 +101,7 @@ class Subscription(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name="courses",
+        related_name="subscriptions",
         verbose_name="Курс",
     )
 

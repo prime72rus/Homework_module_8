@@ -1,8 +1,9 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
 from django.urls import reverse
-from users.models import User
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 from materials.models import Course, Lesson, Subscription
+from users.models import User
 
 
 class LessonTestCase(APITestCase):
@@ -112,6 +113,7 @@ class LessonTestCase(APITestCase):
                         "link_video": None,
                         "course": self.lesson.course.pk,
                         "owner": self.lesson.owner.pk,
+                        "amount": 0
                     }
                 ],
             },
@@ -136,7 +138,10 @@ class SubscriptionTestCase(APITestCase):
         Тест добавления подписки
         """
         url = reverse("materials:subscription")
-        data = {"course_id": self.course.id}
+        data = {
+            "course": self.course.id,
+            "user": 1
+        }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -147,7 +152,7 @@ class SubscriptionTestCase(APITestCase):
         Subscription.objects.create(user=self.user, course=self.course)
 
         url = reverse("materials:subscription")
-        data = {"course_id": self.course.id}
+        data = {"course": self.course.id}
 
         response = self.client.post(url, data)
 
@@ -169,14 +174,14 @@ class SubscriptionTestCase(APITestCase):
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["error"], "course_id обязательное поле")
+        self.assertEqual(response.data["error"], "course обязательное поле")
 
     def test_invalid_course_id(self):
         """
         Тест несуществующего course_id
         """
         url = reverse("materials:subscription")
-        data = {"course_id": 999}
+        data = {"course": 999}
 
         response = self.client.post(url, data)
 

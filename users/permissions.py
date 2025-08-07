@@ -16,3 +16,8 @@ class IsOwner(permissions.BasePermission):
         if obj.owner is None:
             return False
         return obj.owner == request.user
+
+
+class IsSuperUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_superuser
