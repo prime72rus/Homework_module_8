@@ -55,6 +55,7 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --no-root
+          poetry shell
 
       - name: Run tests
         run: |
