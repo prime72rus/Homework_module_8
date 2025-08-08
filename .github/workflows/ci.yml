@@ -99,22 +99,22 @@ jobs:
           source $(poetry env info --path)/bin/activate
           python manage.py test
 
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Log in Docker hub
-        run: echo ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }} .
-
-      - name: Push Docker image in Docker hub
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+#  build:
+#    needs: test
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v3
+#
+#      - name: Log in Docker hub
+#        run: echo ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+#
+#      - name: Build Docker image
+#        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }} .
+#
+#      - name: Push Docker image in Docker hub
+#        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -159,10 +159,13 @@ jobs:
           ls -la
           echo "Checking docker-compose.yml:"
           test -f docker-compose.yml && echo "Found" || echo "NOT FOUND"
+          echo "Files tracked by git:"
+          git ls-files
+          echo "docker-compose.yml status:"
+          git ls-files | grep docker-compose.yml || echo "File not tracked by git"
 
       - name: Deploy to server
         run: |
-          cp $GITHUB_WORKSPACE/docker-compose.yml .
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "mkdir -p ~/app && chmod -R 755 ~/app"
           scp -o StrictHostKeyChecking=no ./.env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/.env
           scp -o StrictHostKeyChecking=no $GITHUB_WORKSPACE/docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/docker-compose.yml
