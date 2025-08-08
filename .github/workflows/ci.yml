@@ -152,11 +152,19 @@ jobs:
           CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}
           EOT
 
+      - name: Verify files
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in directory:"
+          ls -la
+          echo "Checking docker-compose.yml:"
+          test -f docker-compose.yml && echo "Found" || echo "NOT FOUND"
+
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "mkdir -p ~/app && chmod -R 755 ~/app"
           scp -o StrictHostKeyChecking=no ./.env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/.env
-          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/docker-compose.yml
+          scp -o StrictHostKeyChecking=no $GITHUB_WORKSPACE/docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/docker-compose.yml
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           cd ~/app
           export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
