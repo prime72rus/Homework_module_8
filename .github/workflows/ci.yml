@@ -154,28 +154,13 @@ jobs:
 
       - name: Deploy to server
         run: |
-          scp -o StrictHostKeyChecking=no .env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/tmp/.env
+          scp -o StrictHostKeyChecking=no .env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/app/.env
+          scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/app/docker-compose.yml
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          cd /app
+          export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+          export GIT_SHA=${{ github.sha }}
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
-          docker stop myapp myapp-celery myapp-celery-beat || true
-          docker rm myapp myapp-celery myapp-celery-beat || true
-          docker run -d \
-          --name myapp \
-          -p 80:8000 \
-          --env-file /tmp/.env \
-          --restart unless-stopped \
-          ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
-          docker run -d \
-          --name myapp-celery \
-          --env-file /tmp/.env \
-          --restart unless-stopped \
-          ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }} \
-          celery -A config worker --loglevel=info
-          docker run -d \
-          --name myapp-celery-beat \
-          --env-file /tmp/.env \
-          --restart unless-stopped \
-          ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }} \
-          celery -A config beat --loglevel=info
-          rm /tmp/.env
+          docker-compose down
+          docker-compose up -d
           EOF

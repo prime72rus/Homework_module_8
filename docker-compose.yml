@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -19,6 +20,7 @@ services:
 
   redis:
     image: redis:alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
@@ -33,19 +35,21 @@ services:
         condition: service_healthy
 
   web:
-    build: .
-    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    image: ${DOCKER_HUB_USERNAME}/myapp:${GIT_SHA}
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --timeout 120 --workers 4"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/swagger/" ]
       interval: 30s
       timeout: 10s
       retries: 3
     volumes:
-      - .:/app
       - static_volume:/app/static
       - media_volume:/app/media
     ports:
-      - "8000:8000"
+      - "80:8000"
     env_file:
       - .env
     depends_on:
@@ -55,10 +59,9 @@ services:
         condition: service_healthy
 
   celery_worker:
-    build: .
+    image: ${DOCKER_HUB_USERNAME}/myapp:${GIT_SHA}
+    restart: unless-stopped
     command: celery -A config worker --loglevel=info
-    volumes:
-      - .:/app
     env_file:
       - .env
     environment:
@@ -73,15 +76,14 @@ services:
         condition: service_healthy
 
   celery_beat:
-    build: .
+    image: ${DOCKER_HUB_USERNAME}/myapp:${GIT_SHA}
+    restart: unless-stopped
     command: celery -A config beat --loglevel=info
     healthcheck:
       test: [ "CMD-SHELL", "celery --app config inspect ping" ]
       interval: 30s
       timeout: 10s
       retries: 3
-    volumes:
-      - .:/app
     env_file:
       - .env
     depends_on:

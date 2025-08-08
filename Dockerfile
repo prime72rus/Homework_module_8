@@ -24,8 +24,9 @@ RUN poetry add gunicorn
 
 COPY . .
 
-RUN mkdir -p /myapp/staticfiles && chmod -R 755 /myapp/staticfiles
+RUN mkdir -p /app/static && chmod -R 755 /app/static
+RUN mkdir -p /app/media && chmod -R 755 /app/media
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py collectstatic --noinput && python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
