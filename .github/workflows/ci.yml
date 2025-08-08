@@ -153,6 +153,8 @@ jobs:
           STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
           CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }}
           CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}
+          DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+          GIT_SHA=${{ github.sha }}
           EOT
 
       - name: Verify files
@@ -174,8 +176,6 @@ jobs:
           scp -o StrictHostKeyChecking=no $GITHUB_WORKSPACE/docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/docker-compose.yml
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           cd ~/app
-          export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
-          export GIT_SHA=${{ github.sha }}
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           docker-compose down
           docker-compose up -d
