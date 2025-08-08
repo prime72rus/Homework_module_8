@@ -24,7 +24,7 @@ RUN poetry add gunicorn
 
 COPY . .
 
-RUN mkdir -p /myapp/staticfiles && chmod -R 755 /app/staticfiles
+RUN mkdir -p /myapp/staticfiles && chmod -R 755 /myapp/staticfiles
 
 EXPOSE 8000
 

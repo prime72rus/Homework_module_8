@@ -63,8 +63,8 @@ jobs:
       BACKEND: ${{ secrets.BACKEND }}
       LOCATION: ${{ secrets.LOCATION }}
       STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-      CELERY_BROKER_URL: ${{ secrets.CELERY_BROKER_URL }}
-      CELERY_RESULT_BACKEND: ${{ secrets.CELERY_RESULT_BACKEND }}
+      CELERY_BROKER_URL: redis://localhost:6379/0
+      CELERY_RESULT_BACKEND: redis://localhost:6379/0
 
     steps:
       - name: Check out code
@@ -160,5 +160,7 @@ jobs:
           docker stop myapp || true
           docker rm myapp || true
           docker run -d --name myapp -p 80:8000 --env-file /tmp/.env ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+          docker exec -d myapp celery -A config worker --loglevel=info
+          docker exec -d myapp celery -A config beat --loglevel=info
           rm /tmp/.env
           EOF
