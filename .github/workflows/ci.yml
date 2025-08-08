@@ -162,6 +162,7 @@ jobs:
 
       - name: Deploy to server
         run: |
+          cp $GITHUB_WORKSPACE/docker-compose.yml .
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "mkdir -p ~/app && chmod -R 755 ~/app"
           scp -o StrictHostKeyChecking=no ./.env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/.env
           scp -o StrictHostKeyChecking=no $GITHUB_WORKSPACE/docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/docker-compose.yml
