@@ -28,6 +28,7 @@ from django.http import JsonResponse
 def health_check(request):
     return JsonResponse({"status": "ok"})
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("materials.urls", namespace="materials")),
