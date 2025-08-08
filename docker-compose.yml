@@ -41,6 +41,7 @@ services:
       interval: 5m
       timeout: 30s
       retries: 2
+      start_period: 5s
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
