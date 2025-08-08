@@ -155,6 +155,7 @@ jobs:
           CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}
           DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
           GIT_SHA=${{ github.sha }}
+          SERVER_IP=${{ secrets.SERVER_IP }}
           EOT
 
       - name: Verify files
