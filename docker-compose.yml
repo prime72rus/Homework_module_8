@@ -34,8 +34,7 @@ services:
   web:
     image: ${DOCKER_HUB_USERNAME}/myapp:${GIT_SHA}
     command: >
-      sh -c "python manage.py migrate &&
-             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+      sh -c "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://$${SERVER-IP}:8000/health/"]
       interval: 5m
