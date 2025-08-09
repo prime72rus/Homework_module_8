@@ -42,7 +42,7 @@ services:
       retries: 2
       start_period: 5s
     volumes:
-      - static_volume:/app/static
+      - static_volume:/app/staticfiles
       - media_volume:/app/media
     ports:
       - "80:8000"
