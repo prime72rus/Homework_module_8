@@ -55,7 +55,7 @@ services:
         condition: service_healthy
 
   nginx:
-    image: nginx:latest
+    build: ./nginx
     ports:
       - "80:80"
     volumes:
