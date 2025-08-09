@@ -175,7 +175,6 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "mkdir -p ~/app"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "chmod -R 777 ~/app"
           scp -o StrictHostKeyChecking=no ./.env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/.env
           scp -o StrictHostKeyChecking=no $GITHUB_WORKSPACE/docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/app/docker-compose.yml
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
