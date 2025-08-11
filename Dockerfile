@@ -17,14 +17,16 @@ RUN poetry config virtualenvs.create false
 
 ENV PATH="/root/.local/bin:${PATH}"
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml ./
 
 RUN poetry install --no-interaction --no-ansi --only main
+RUN poetry add gunicorn
 
 COPY . .
 
-RUN mkdir -p /app/{static,media}
+RUN mkdir -p /app/static && chmod -R 755 /app/static
+RUN mkdir -p /app/media && chmod -R 755 /app/media
 
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]

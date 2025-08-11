@@ -25,6 +25,7 @@ class UserListAPIView(ListAPIView):
 
 class UserDetailAPIView(RetrieveAPIView):
     queryset = User.objects.all()
+    lookup_field = "pk"
 
     def get_serializer_class(self):
         if self.request.user == self.get_object():
@@ -66,6 +67,7 @@ class UserUpdateAPIView(UpdateAPIView):
 
 class UserDeleteAPIView(DestroyAPIView):
     queryset = User.objects.all()
+    serializer_class = UserSerializer
 
     def get_object(self):
         user = super().get_object()
